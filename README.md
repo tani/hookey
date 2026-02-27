@@ -46,18 +46,15 @@ Add a function that accepts a position `pos` to `hookey-after-insert-functions`.
 
 ### Example: Smart Brace Expansion
 
-For instance, you can easily implement a rule: "If the user presses Enter between `{` and `}`, insert an extra empty line and indent."
+For instance, you can easily implement a rule: "If the user presses `>` to complete the open tag, insert the corresponding close tag."
 
 ```elisp
-(defun my-hookey-braces-handler (pos)
-  (let ((result (hookey-match "{\n\0}" pos)))
-    (when result
-      (hookey-insert "\n" pos result)
-      (indent-according-to-mode)
-      (forward-line -1)
-      (indent-according-to-mode))))
+(defun hookey-html-tag (pos)
+   (when-let* ((_ (not (nth 3 (syntax-ppss))))
+               (m (hookey-match "<\\(\\w+\\)>\0" pos)))
+     (hookey-insert "</\\1>" pos m)))
 
-(add-hook 'hookey-after-insert-functions #'my-hookey-braces-handler)
+(add-hook 'hookey-after-insert-functions #'hookey-html-tag)
 ```
 
 License
