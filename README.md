@@ -44,7 +44,7 @@ Usage
 
 Add a function that accepts a position `pos` to `hookey-after-insert-functions`.
 
-### Example: Smart Brace Expansion
+### Example
 
 For instance, you can easily implement a rule: "If the user presses `>` to complete the open tag, insert the corresponding close tag."
 
