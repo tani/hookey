@@ -13,6 +13,11 @@
 (defvar hookey-after-insert-functions nil
   "Functions called with (POS) after self-insertion.")
 
+(defun hookey--keyboard-input-event-p ()
+  "Return non-nil when current command is from keyboard input."
+  (or (characterp last-input-event)
+      (symbolp last-input-event)))
+
 (defun hookey-match (pattern pos)
   "Match PATTERN against buffer context at POS.
 Inside PATTERN, use \"\\0\" to represent the current insertion point."
@@ -36,7 +41,8 @@ Inside PATTERN, use \"\\0\" to represent the current insertion point."
 (defun hookey--post-self-insert-handler ()
   "Handle self-insertion with a re-entry guard using dlet."
   (when (and (not (bound-and-true-p hookey--reentry-guard))
-             (characterp last-command-event))
+             (characterp last-command-event)
+             (hookey--keyboard-input-event-p))
     (dlet ((hookey--reentry-guard t))
       (run-hook-with-args 'hookey-after-insert-functions (point)))))
 
@@ -59,4 +65,3 @@ Inside PATTERN, use \"\\0\" to represent the current insertion point."
     (hookey-mode 1)))
 
 (provide 'hookey)
-
